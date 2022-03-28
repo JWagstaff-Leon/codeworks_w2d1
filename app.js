@@ -20,12 +20,13 @@ function drawTeams()
         let teamScore = getTeamScore(teams[currentTeam].players);
         let teamsWidth = teams.length == 2 ? 6 : 12;
 
+        // TODO make it look okay on mobile
         template += 
         `
         <div class="col-${teamsWidth} mt-2 mb-4 text-light">
             <div class="row bg-dark mx-2">
                 <div class="col-12 my-2">
-                    <div class="row justify-content-between my-2 mx-3">
+                    <div class="row justify-content-between my-2 mx-3" data-bs-toggle="collapse" data-bs-target="#team-${currentTeam}">
                         <div class="col">
                             <h2>${teams[currentTeam].name}</h2>
                         </div>
@@ -33,29 +34,30 @@ function drawTeams()
                             <h3>Team Score: ${teamScore}</h3>
                         </div>
                     </div>
-                    <div class="row justify-content-around mb-2">
-                        <div class="col d-flex justify-content-center">
-                            <button class="btn btn-primary" onclick="addPlayer(${currentTeam})">Add Player</button>
+                    <div class="collapse" id="team-${currentTeam}">
+                        <div class="row justify-content-around mb-2">
+                            <div class="col d-flex justify-content-center">
+                                <button class="btn btn-primary" onclick="addPlayer(${currentTeam})">Add Player</button>
+                            </div>
+                            <div class="col d-flex justify-content-center">
+                                <button class="btn btn-warning" onclick="renameTeam(${currentTeam})">Rename Team</button>
+                            </div>
                         </div>
-                        <div class="col d-flex justify-content-center">
-                            <button class="btn btn-warning" onclick="renameTeam(${currentTeam})">Rename Team</button>
+                        <div class="row justify-content-around mb-5">
+                            <div class="col d-flex justify-content-center">
+                                <button class="btn btn-secondary" onclick="resetTeamScore(${currentTeam})">Reset Team Score</button>
+                            </div>
+                            <div class="col d-flex justify-content-center">
+                                <button class="btn btn-danger" onclick="deleteTeam(${currentTeam})">Delete Team</button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row justify-content-around mb-5">
-                        <div class="col d-flex justify-content-center">
-                            <button class="btn btn-secondary" onclick="resetTeamScore(${currentTeam})">Reset Team Score</button>
-                        </div>
-                        <div class="col d-flex justify-content-center">
-                            <button class="btn btn-danger" onclick="deleteTeam(${currentTeam})">Delete Team</button>
-                        </div>
-                    </div>
         `;
         
         for(let currentPlayer = 0; currentPlayer < teams[currentTeam].players.length; currentPlayer += 1)
         {
             template += 
             `
-            <div class="row justify-content-between my-2">
+            <div class="row justify-content-between mt-5 pt-2">
                 <div class="col-6">
                     <h3>${teams[currentTeam].players[currentPlayer].name}</h3>
                 </div>
@@ -70,7 +72,7 @@ function drawTeams()
                     </div>
                 </div>
             </div>
-            <div class="row mb-4 justify-content-between">
+            <div class="row mt-2 pb-2 justify-content-between">
                 <div class="col-6">
                     <h4>Player Score: ${teams[currentTeam].players[currentPlayer].score}</h4>
                 </div>
@@ -88,11 +90,13 @@ function drawTeams()
                     </div>
                 </div>
             </div>
+            <div class="justify-self-center my-4 ${(currentPlayer + 1 < teams[currentTeam].players.length) ? "player-divider" : "" }"></div>
             `;
         }
         
         template +=
         `
+                    </div>
                 </div>
             </div>
         </div>

@@ -1,0 +1,7 @@
+.player-divider
+{
+    background-color: lightgray;
+    height: 6px;
+    border-radius: 3px;
+    width: 100%;
+}
