@@ -6,9 +6,40 @@ let teamsAdded = 0;
 
 function changeScore(team, player, amount)
 {
-    teams[team].players[player] += amount;
+    teams[team].players[player].score += amount;
 
+    updateTeams();
+}
+
+function loadTeams()
+{
+    let loadedTeams = JSON.parse(window.localStorage.getItem("teams"));
+
+    if(loadedTeams)
+    {
+        teams = loadedTeams;
+    }
+    
+    let loadedTeamsAdded = window.localStorage.getItem("teamsAdded");
+    
+    if(loadedTeamsAdded)
+    {
+        teamsAdded = loadedTeamsAdded;
+    }
+
+    updateTeams();
+}
+
+function updateTeams()
+{
+    saveTeams();
     drawTeams();
+}
+
+function saveTeams()
+{
+    window.localStorage.setItem("teams", JSON.stringify(teams));
+    window.localStorage.setItem("teamsAdded", teamsAdded)
 }
 
 function drawTeams()
@@ -21,12 +52,13 @@ function drawTeams()
         let teamsWidth = teams.length == 2 ? 6 : 12;
 
         // TODO make it look okay on mobile
+        // FIXME collapse doesn't work if you click another button
         template += 
         `
         <div class="col-${teamsWidth} mt-2 mb-4 text-light">
             <div class="row bg-dark mx-2">
                 <div class="col-12 my-2">
-                    <div class="row justify-content-between my-2 mx-3" data-bs-toggle="collapse" data-bs-target="#team-${currentTeam}">
+                    <div class="row justify-content-between my-2 mx-3" data-bs-toggle="collapse" data-bs-target="#disabled-team-${currentTeam}">
                         <div class="col">
                             <h2>${teams[currentTeam].name}</h2>
                         </div>
@@ -34,7 +66,7 @@ function drawTeams()
                             <h3>Team Score: ${teamScore}</h3>
                         </div>
                     </div>
-                    <div class="collapse" id="team-${currentTeam}">
+                    <div class="disabled-collapse" id="team-${currentTeam}">
                         <div class="row justify-content-around mb-2">
                             <div class="col d-flex justify-content-center">
                                 <button class="btn btn-primary" onclick="addPlayer(${currentTeam})">Add Player</button>
@@ -51,6 +83,7 @@ function drawTeams()
                                 <button class="btn btn-danger" onclick="deleteTeam(${currentTeam})">Delete Team</button>
                             </div>
                         </div>
+                        <div class=${teams[currentTeam].players.length > 0 ? "player-divider" : ""}></div>
         `;
         
         for(let currentPlayer = 0; currentPlayer < teams[currentTeam].players.length; currentPlayer += 1)
@@ -125,7 +158,7 @@ function resetAllScores()
         resetTeamScore(currentTeam);
     }
 
-    drawTeams();
+    updateTeams();
 }
 
 function resetTeamScore(team)
@@ -134,14 +167,14 @@ function resetTeamScore(team)
     {
         resetPlayerScore(team, currentPlayer);
     }
-    drawTeams();
+    updateTeams();
 }
 
 function resetPlayerScore(team, player)
 {
     teams[team].players[player].score = 0;
 
-    drawTeams();
+    updateTeams();
 }
 
 function renameTeam(team)
@@ -152,7 +185,7 @@ function renameTeam(team)
         teams[team].name = newName;
     }
 
-    drawTeams();
+    updateTeams();
 }
 
 function renamePlayer(team, player)
@@ -163,7 +196,7 @@ function renamePlayer(team, player)
         teams[team].players[player].name = newName;
     }
 
-    drawTeams();
+    updateTeams();
 }
 
 function addTeam()
@@ -171,7 +204,7 @@ function addTeam()
     let newTeam = { name: `New Team ${++teamsAdded}`, players: [], playersAdded: 0};
     teams.push(newTeam);
 
-    drawTeams();
+    updateTeams();
 }
 
 function addPlayer(team)
@@ -179,7 +212,7 @@ function addPlayer(team)
     let newPlayer = {name: `New Player ${++teams[team].playersAdded}`, score: 0};
     teams[team].players.push(newPlayer);
 
-    drawTeams();
+    updateTeams();
 }
 
 function deleteTeam(team)
@@ -191,7 +224,7 @@ function deleteTeam(team)
     
     teams.pop();
     
-    drawTeams();
+    updateTeams();
 }
 
 function deletePlayer(team, player)
@@ -203,7 +236,8 @@ function deletePlayer(team, player)
     
     teams[team].players.pop();
 
-    drawTeams();
+    updateTeams();
 }
 
-drawTeams();
+loadTeams();
+updateTeams();
